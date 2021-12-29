@@ -1,1 +1,0 @@
-import{t,i as n}from"./vendor.eefe3fb1.js";const s=t('<div class="grid grid-cols-6 grid-rows-[3.5rem_minmax(900px,_1fr)] min-h-screen min-w-full"></div>'),o=r=>(()=>{const e=s.cloneNode(!0);return n(e,()=>r.children),e})();export{o as default};

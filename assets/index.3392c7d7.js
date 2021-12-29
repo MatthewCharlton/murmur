@@ -1,1 +1,0 @@
-import{t as n,j as a,k as s,s as c,i as r,n as l}from"./vendor.eefe3fb1.js";const o=n("<button></button>"),u=t=>(()=>{const e=o.cloneNode(!0);return s(e,"click",t.onClick,!0),c(e,t,!1,!0),r(e,()=>t.children),l(()=>e.className="px-3 py-2 border-2".concat(" "+t.class)),e})();a(["click"]);export{u as default};
