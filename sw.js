@@ -4,9 +4,13 @@ const { set, get } = idbKeyval;
 
 const MURMUR_CACHE_NAME = 'murmur-v1';
 const CACHED_ENTRY_NAME = 'latest-messages';
+const IDB_LAST_SEEN_MESSAGE_KEY = 'last-seen-message';
+const SUPABASE_API_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzMTkzMTIwOCwiZXhwIjoxOTQ3NTA3MjA4fQ.9_yqUYeJRjf5tCyhdXK69Kro_zF4-JXA_zSVfgcL-t8';
+const SUPABASE_URL = 'https://umyqzzqlfvdupowmybfs.supabase.co';
 
 self.addEventListener('fetch', (event) => {
-  if (!event.request.url?.includes('supabase.co')) return;
+  if (!event.request.url?.includes(SUPABASE_URL)) return;
   event.respondWith(
     caches.open(MURMUR_CACHE_NAME).then(function (cache) {
       return cache.match(CACHED_ENTRY_NAME).then(function (response) {
@@ -21,22 +25,21 @@ self.addEventListener('fetch', (event) => {
 });
 
 const fetchAndCacheLatestMessages = async () => {
+  const session = await get('session-token');
+  if (!session) return;
   const res = await fetch(
-    'https://umyqzzqlfvdupowmybfs.supabase.co/rest/v1/chat-data?select=*&order=id.asc.nullslast',
+    `${SUPABASE_URL}/rest/v1/chat-data?select=*&order=id.asc.nullslast`,
     {
       headers: {
-        apikey:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzMTkzMTIwOCwiZXhwIjoxOTQ3NTA3MjA4fQ.9_yqUYeJRjf5tCyhdXK69Kro_zF4-JXA_zSVfgcL-t8',
-        authorization:
-          'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNjQwNjczNjYzLCJzdWIiOiJjYWYxOTFlOS0wMzg1LTQxNWYtYWQzMS00MmQyMzRhMTBkNzQiLCJlbWFpbCI6ImNoYXJsdG9uMTk4NkBob3RtYWlsLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwifSwidXNlcl9tZXRhZGF0YSI6e30sInJvbGUiOiJhdXRoZW50aWNhdGVkIn0.cAR8OYuSir2pffr9Sx696nFbNRiJcdh8PrLHq_MZJ94',
+        apikey: SUPABASE_API_KEY,
+        authorization: `Bearer ${session.access_token}`,
       },
     }
   );
-  const json = await res.json();
-  caches.open(MURMUR_CACHE_NAME).then(function (cache) {
-    cache.put(CACHED_ENTRY_NAME, json);
+  return caches.open(MURMUR_CACHE_NAME).then(function (cache) {
+    cache.put(CACHED_ENTRY_NAME, res.clone());
+    return res;
   });
-  return json;
 };
 
 self.addEventListener('periodicsync', (event) => {
@@ -48,12 +51,14 @@ self.addEventListener('periodicsync', (event) => {
 
 self.addEventListener('message', (event) => {
   console.log('message', event);
-  get('last-seen')
+  get(IDB_LAST_SEEN_MESSAGE_KEY)
     .then((lastSeenMessage) => {
       const { payload } = event.data;
       const latestMessage = payload.pop();
       if (lastSeenMessage?.id !== latestMessage.id) {
-        set('last-seen', latestMessage).then(() => console.log('done'));
+        set(IDB_LAST_SEEN_MESSAGE_KEY, latestMessage).then(() =>
+          console.log('done')
+        );
       }
     })
     .catch((err) => console.log('It failed!', err));

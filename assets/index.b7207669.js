@@ -1,0 +1,1 @@
+import{t,i as n}from"./vendor.f206e712.js";const s=t('<div class="grid grid-cols-6 grid-rows-[3.5rem_minmax(900px,_1fr)] min-h-screen min-w-full"></div>'),o=e=>(()=>{const r=s.cloneNode(!0);return n(r,()=>e.children),r})();export{o as default};
