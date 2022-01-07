@@ -50,7 +50,6 @@ self.addEventListener('periodicsync', (event) => {
 });
 
 self.addEventListener('message', (event) => {
-  console.log('message', event);
   get(IDB_LAST_SEEN_MESSAGE_KEY)
     .then((lastSeenMessage) => {
       const { payload } = event.data;
