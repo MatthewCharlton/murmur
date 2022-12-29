@@ -1,0 +1,1 @@
+import o from"./index-fb2f375b.js";import{u as r,a}from"./index-1f9a76af.js";import"./browser-ponyfill-5ce9a37a.js";function c(){const n=r();return a(o,{onClick:async()=>{const{error:t}=await n.supabase.auth.signOut();if(t){console.error("Error signing out",t);return}window.location.assign("/murmur/")},children:"Sign out"})}export{c as default};
