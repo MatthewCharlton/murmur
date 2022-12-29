@@ -1,1 +1,0 @@
-import{i as e,t as i}from"./index-8f04267c.js";import"./browser-ponyfill-5ce9a37a.js";const n=i('<div class="grid grid-cols-6 grid-rows-[3.5rem_minmax(900px,_1fr)] min-h-screen min-w-full"></div>'),l=t=>(()=>{const r=n.cloneNode(!0);return e(r,()=>t.children),r})();export{l as default};
